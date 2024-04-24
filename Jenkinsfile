@@ -2,8 +2,11 @@ pipeline {
     agent any
     
     environment {
-        BUILD_NUMBER = "${env.BUILD_NUMBER}"
-        RUN_ARTIFACT_DIR = "tests/${env.BUILD_NUMBER}"
+        BUILD_NUMBER = sh(script: 'echo $BUILD_NUMBER', returnStdout: true).trim()
+        HUB_ORG = sh(script: 'echo $HUB_ORG_DH', returnStdout: true).trim()
+        SFDC_HOST = sh(script: 'echo $SFDC_HOST_DH', returnStdout: true).trim()
+        JWT_KEY_CRED_ID = sh(script: 'echo $JWT_CRED_ID_DH', returnStdout: true).trim()
+        CONNECTED_APP_CONSUMER_KEY = sh(script: 'echo $CONNECTED_APP_CONSUMER_KEY_DH', returnStdout: true).trim()
     }
     
     parameters {
@@ -14,11 +17,6 @@ pipeline {
         stage('Initialize') {
             steps {
                 script {
-                    def HUB_ORG = env.HUB_ORG_DH
-                    def SFDC_HOST = env.SFDC_HOST_DH
-                    def JWT_KEY_CRED_ID = env.JWT_CRED_ID_DH
-                    def CONNECTED_APP_CONSUMER_KEY = env.CONNECTED_APP_CONSUMER_KEY_DH
-                    
                     echo 'Environment variables:'
                     echo "BUILD_NUMBER: ${BUILD_NUMBER}"
                     echo "HUB_ORG: ${HUB_ORG}"
