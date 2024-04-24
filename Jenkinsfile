@@ -1,6 +1,3 @@
-#!groovy
-import groovy.json.JsonSlurperClassic
-
 pipeline {
     agent any
     
@@ -22,11 +19,11 @@ pipeline {
                     def JWT_KEY_CRED_ID = env.JWT_CRED_ID_DH
                     def CONNECTED_APP_CONSUMER_KEY = env.CONNECTED_APP_CONSUMER_KEY_DH
                     
-                    println 'KEY IS'
-                    println JWT_KEY_CRED_ID
-                    println HUB_ORG
-                    println SFDC_HOST
-                    println CONNECTED_APP_CONSUMER_KEY
+                    echo 'KEY IS'
+                    echo JWT_KEY_CRED_ID
+                    echo HUB_ORG
+                    echo SFDC_HOST
+                    echo CONNECTED_APP_CONSUMER_KEY
                     
                     toolbelt = tool 'toolbelt'
                 }
@@ -41,7 +38,7 @@ pipeline {
         
         stage('Deploy Code') {
             steps {
-                withCredentials([file(credentialsId: "${JWT_KEY_CRED_ID}", variable: 'jwt_key_file')]) {
+                withCredentials([file(credentialsId: "${env.JWT_CRED_ID_DH}", variable: 'jwt_key_file')]) {
                     script {
                         if (isUnix()) {
                             rc = sh returnStatus: true, script: "${toolbelt} force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
@@ -50,7 +47,7 @@ pipeline {
                         }
                         if (rc != 0) { error 'Hub org authorization failed' }
 
-                        println rc
+                        echo rc
 
                         if (isUnix()) {
                             rmsg = sh returnStdout: true, script: "${toolbelt} force:source:deploy --manifest manifest/package.xml -u ${HUB_ORG}"
@@ -58,9 +55,9 @@ pipeline {
                             rmsg = bat returnStdout: true, script: "\"${toolbelt}\" force:source:deploy --manifest manifest/package.xml -u ${HUB_ORG}"
                         }
 
-                        printf rmsg
-                        println('Hello from a Job DSL script!')
-                        println(rmsg)
+                        echo rmsg
+                        echo 'Hello from a Job DSL script!'
+                        echo rmsg
                     }
                 }
             }
