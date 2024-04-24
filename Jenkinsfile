@@ -18,6 +18,7 @@ pipeline {
             steps {
                 script {
                     echo 'Environment variables:'
+                    echo'hi'
                     echo "BUILD_NUMBER: ${BUILD_NUMBER}"
                     echo "HUB_ORG: ${HUB_ORG}"
                     echo "SFDC_HOST: ${SFDC_HOST}"
